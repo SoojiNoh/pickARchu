@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap screenBitmap = view.getDrawingCache();
         File f = storeScreenShot(screenBitmap);
         if(f != null)
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(f)));
+            openScreenshot(f);
 
         view.setDrawingCacheEnabled(false);
     }
@@ -70,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
         return file;
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
