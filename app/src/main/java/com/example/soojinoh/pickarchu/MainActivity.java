@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     String[] PERMISSIONS  = {"android.permission.CAMERA"};
 
     ImageView imgButton;
-    ImageView imgButton2;
     RelativeLayout relativeLayout;
     FrameLayout frameLayout;
     ImageView imageView1, imageView2, imageView3, imageView4;
@@ -51,18 +50,30 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //퍼미션 상태 확인
+            if (!hasPermissions(PERMISSIONS)) {
+
+                //퍼미션 허가 안되어있다면 사용자에게 요청
+                requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE);
+            }
+        }
+
         findViewById(R.id.imageView).setOnTouchListener(this);
         findViewById(R.id.imageView).getRootView().setOnDragListener(this);
 
         dm = getApplicationContext().getResources().getDisplayMetrics();
-        mCameraTextureView = (TextureView) findViewById(R.id.cameraTextureView);
-        mPreview = new Preview(this, mCameraTextureView);
+        //mCameraTextureView = (TextureView) findViewById(R.id.cameraTextureView);
 
         frameLayout = (FrameLayout) findViewById(R.id.activity_main);
         relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
         imgButton = (ImageView) findViewById(R.id.button);
-        //imgButton2 = (ImageView) findViewById(R.id.button2);
         imageView1 = (ImageView) findViewById(R.id.imageView1);
         imageView2 = (ImageView) findViewById(R.id.imageView2);
         imageView3 = (ImageView) findViewById(R.id.imageView3);
@@ -92,18 +103,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             }
         });
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //퍼미션 상태 확인
-            if (!hasPermissions(PERMISSIONS)) {
-
-                //퍼미션 허가 안되어있다면 사용자에게 요청
-                requestPermissions(PERMISSIONS, PERMISSIONS_REQUEST_CODE);
-            }
-        }
-
         imgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                     imgButton.setY(height - 530);
                     relativeLayout.setVisibility(View.VISIBLE);
                     isMenuVisible = true;
-                    //imageView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -158,26 +156,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mPreview.onResume();
-
-        Log.d("****Camera Actv", "onResume 실행");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mPreview.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-
     private boolean hasPermissions(String[] permissions) {
         int result;
 
@@ -191,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 return false;
             }
         }
-
         //모든 퍼미션이 허가되었음
         return true;
     }
