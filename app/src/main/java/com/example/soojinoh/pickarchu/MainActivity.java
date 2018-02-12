@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     private Camera mCamera = null;
     private CameraView mCameraView = null;
-    private TextureView mCameraTextureView;
-    private Preview mPreview;
     DisplayMetrics dm;
 
     //여기서부턴 퍼미션 관련 메소드
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         findViewById(R.id.imageView).getRootView().setOnDragListener(this);
 
         dm = getApplicationContext().getResources().getDisplayMetrics();
-        //mCameraTextureView = (TextureView) findViewById(R.id.cameraTextureView);
 
         frameLayout = (FrameLayout) findViewById(R.id.activity_main);
         relativeLayout = (RelativeLayout) findViewById(R.id.relativeLayout);
