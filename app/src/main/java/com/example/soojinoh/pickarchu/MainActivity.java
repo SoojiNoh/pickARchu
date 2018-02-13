@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.database.Cursor;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,21 +17,29 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
+import org.w3c.dom.Text;
+
 import java.io.FileOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    final static int PERMISSION_REQUEST_STORAGE = 0;
-    TextView view; //일단 카메라뷰가 없으므로 이걸로 대체 합니다.
+    private final static int PERMISSION_REQUEST_STORAGE = 0;
+    private final int GALLERY_CODE=1112;
+    private String selectedImagePath;
+
+    TextView capturetest;
+    TextView gallarytest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        view = (TextView) findViewById(R.id.textView);
+
+        capturetest = (TextView) findViewById(R.id.textView_capture_save_test);
+        gallarytest = (TextView) findViewById(R.id.textView_call_gallary_test);
     }
 
     public void onCameraViewClick(View v) {
@@ -42,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
             openScreenshot(f);
 
         view.setDrawingCacheEnabled(false);
+    }
+
+    public void onMoreImageViewClick(View v) { // selectImageFromGallery
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setData(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, GALLERY_CODE);
     }
 
     public File storeScreenShot(Bitmap screenBitmap) {
@@ -107,4 +124,33 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case GALLERY_CODE:
+                    selectedImagePath = getRealPathFromURI(data.getData());
+
+                    Log.d("***sssss***", selectedImagePath);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        int column_index=0;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if(cursor.moveToFirst()){
+            column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        }
+        return cursor.getString(column_index);
+    }
+
 }
